@@ -36,7 +36,7 @@ public class Product {
     @Column(
             nullable = false
     )
-    long quantity;
+    Integer quantity;
     //category    → category filtering
     @Column(
             nullable = false

@@ -1,0 +1,8 @@
+package com.caseStudy.E_commerce.ExceptionHandler;
+
+public class DuplicateResourceException extends RuntimeException {
+
+    public DuplicateResourceException(String message){
+        super(message);
+    }
+}

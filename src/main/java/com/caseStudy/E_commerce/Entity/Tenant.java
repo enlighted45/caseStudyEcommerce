@@ -27,10 +27,16 @@ public class Tenant {
             nullable = false
     )
     String name;
-    @OneToMany(mappedBy = "tenant")
+    @OneToMany(
+            mappedBy = "tenant",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     List<User> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tenant")
+    @OneToMany(
+            mappedBy = "tenant" ,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     List<Product> products = new ArrayList<>();
     //createdAt
     LocalDateTime createdAt;
