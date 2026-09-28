@@ -3,9 +3,11 @@ package com.caseStudy.E_commerce.Mapper;
 import com.caseStudy.E_commerce.DTO.tenant.TenantRequestDTO;
 import com.caseStudy.E_commerce.DTO.tenant.TenantResponseDTO;
 import com.caseStudy.E_commerce.Entity.Tenant;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class TenantMapper {
 
     public Tenant mapToEntity(TenantRequestDTO tenantRequestDTO){

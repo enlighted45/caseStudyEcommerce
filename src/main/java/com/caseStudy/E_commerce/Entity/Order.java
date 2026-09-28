@@ -1,7 +1,9 @@
 package com.caseStudy.E_commerce.Entity;
 
 
+import com.caseStudy.E_commerce.Enum.OrderStatus;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 public class Order {
 
     //id	Long	Primary key
@@ -19,7 +22,7 @@ public class Order {
     @Column(
             nullable = false
     )
-    long totalQuantity;
+    Integer totalQuantity;
     //totalAmount	BigDecimal	Total price of the order
     @Column(
             precision=15,
@@ -42,6 +45,8 @@ public class Order {
     )
     List<OrderItem> orderItems=new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    OrderStatus status;
     LocalDateTime createdAt;
 
 }

@@ -2,10 +2,13 @@ package com.caseStudy.E_commerce.Entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -34,6 +37,8 @@ public class OrderItem {
     )
     Product product;
     //quantity	Integer	Number of units purchased
+    @Positive(message = "price should be greater than zero")
+    private BigDecimal price;
     @Column(
       name = "Quantity",
       nullable = false

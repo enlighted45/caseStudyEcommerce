@@ -42,14 +42,14 @@ public class User {
     )
     String email;
 
-    @Column(
+    /*@Column(
             nullable = false,
             name = "Password",
             length = 150,
             insertable = true,
             updatable = true
     )
-    String password;
+    String password;*/
 
     @Column(
             nullable = false,

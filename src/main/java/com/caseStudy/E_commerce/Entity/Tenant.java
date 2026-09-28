@@ -42,4 +42,13 @@ public class Tenant {
     LocalDateTime createdAt;
     //updatedAt
     LocalDateTime updatedAt;
+
+    public void addUser(User user){
+        user.setTenant(this);
+        this.users.add(user);
+    }
+    public void addProduct(Product product){
+        product.setTenant(this);
+        this.products.add(product);
+    }
 }

@@ -40,6 +40,7 @@ public class ProductService {
         );
         // check whether it is duplicate or not
         Product product = productMapper.mapToEntity(productRequestDTO,tenant);
+        tenant.addProduct(product);
         product = productRepository.save(product);
         return productMapper.mapToResponseDTO(product);
     }
@@ -82,6 +83,11 @@ public class ProductService {
                                 " does not exist under tenant " + tenantId
                 )
         );
+        Tenant tenant = product.getTenant();
+
+        if (tenant != null) {
+            tenant.getProducts().remove(product);
+        }
         productRepository.delete(product);
     }
 

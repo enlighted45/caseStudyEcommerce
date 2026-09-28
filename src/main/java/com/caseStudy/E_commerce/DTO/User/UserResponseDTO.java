@@ -20,4 +20,5 @@ public class UserResponseDTO {
     @Enumerated(EnumType.STRING)
     private Role role;
     private Long tenantId;
+
 }
