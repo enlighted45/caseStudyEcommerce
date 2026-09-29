@@ -24,5 +24,16 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     )
     Page<Order> findByUserId(Long userId, Pageable pageable);
 
+    @Query(
+            """
+            SELECT o
+            FROM Order o
+            JOIN o.user u
+            WHERE u.id = ?1                                    
+            """
+    )
+    Page<Order> findOrderHistory(Long userId, Pageable pageable);
+
+
 
 }

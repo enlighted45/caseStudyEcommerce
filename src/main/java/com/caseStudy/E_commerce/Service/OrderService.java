@@ -18,6 +18,9 @@ import com.caseStudy.E_commerce.Repository.OrderRepository;
 import com.caseStudy.E_commerce.Repository.ProductRepository;
 import com.caseStudy.E_commerce.Repository.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +47,7 @@ public class OrderService {
     }
 
 
-    
+
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO){
         // order request me mujhe userid or
@@ -97,8 +100,25 @@ public class OrderService {
     }
 
     // get orderHistory
+    @Transactional(readOnly = true)
+    public Page<OrderResponseDTO> getOrderHistory(Long userId, Pageable pageable){
+        // validate the user
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("User with Id : " + userId + " don't exist"));
+        //findAllOrderByUserId
+        // have to make pagebale because user pagaeble wouldn't have
+        Pageable newPagebale = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("createdAt").descending()
+        );
+        // ishme mujhe
+        return orderRepository.
+                findOrderHistory(userId,newPagebale).
+                map(order -> orderMapper.mapToResponseDTO(order));
+    }
 
-    public Page<OrderResponseDTO> getOrderHistory()
+
 
 
 }

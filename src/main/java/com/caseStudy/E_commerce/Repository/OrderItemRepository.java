@@ -5,7 +5,7 @@ import com.caseStudy.E_commerce.Entity.Order;
 import com.caseStudy.E_commerce.Entity.OrderItem;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -28,7 +28,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
     )
     //findByOrderId(Long orderId)
     List<OrderItem> findByOrderId(Long id);
-
 
 
 
