@@ -17,6 +17,7 @@ import com.caseStudy.E_commerce.Mapper.UserMapper;
 import com.caseStudy.E_commerce.Repository.OrderRepository;
 import com.caseStudy.E_commerce.Repository.ProductRepository;
 import com.caseStudy.E_commerce.Repository.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,7 +85,20 @@ public class OrderService {
         orderRepository.save(order);
         return orderMapper.mapToResponseDTO(order);
     }
+    // get OrderById
+    @Transactional(readOnly = true)
+    public OrderResponseDTO getOrderById(Long orderID){
+        Order order = orderRepository.findById(orderID).
+                orElseThrow(()->new ResourceNotFoundException(
+                        "Order with ID : " + orderID + "Don't exist"
+                ));
 
+        return orderMapper.mapToResponseDTO(order);
+    }
+
+    // get orderHistory
+
+    public Page<OrderResponseDTO> getOrderHistory()
 
 
 }
