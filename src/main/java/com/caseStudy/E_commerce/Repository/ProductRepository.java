@@ -24,62 +24,54 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             WHERE t.id = ?1
             """
     )
-    Page<Product> findByTenantId(Long tenantId, Pageable pageable);
+    Page<Product> findByTenantName(String tenantName, Pageable pageable);
+
 
     @Query(
             """
            SELECT p
            FROM Product p
-           JOIN p.tenant t
-           WHERE t.id = ?1
-           AND p.category = ?2   
+           WHERE p.category = ?1   
            """
     )
-    Page<Product> findByTenantIdAndCategory(Long tenantId, String category, Pageable pageable);
-
+    Page<Product> findByCategory(String category, Pageable pageable);
 
 
     @Query(
             """
             SELECT p
             FROM Product p
-            JOIN p.tenant t
-            WHERE t.id = ?1
-            AND p.name LIKE CONCAT('%', ?2, '%') 
+            WHERE p.name LIKE CONCAT('%', ?1, '%') 
            """
     )
-    Page<Product> findByTenantIdAndName(Long tenantId, String name, Pageable pageable);
-
+    Page<Product> findByName(String name, Pageable pageable);
 
     @Query(
             """
             SELECT p
             FROM Product p
-            JOIN p.tenant t
-            WHERE t.id = ?1
-            AND p.category = ?2
-            AND p.name LIKE CONCAT('%', ?3, '%')
+            WHERE p.category = ?1
+            AND p.name LIKE CONCAT('%', ?2, '%')
            """
     )
-    Page <Product> findByTenantIdAndCategoryAndName(
-            Long tenantId,
+    Page <Product> findByCategoryAndName(
             String category,
             String name,
             Pageable pageable
     );
 
     @Query(
+
             """
             SELECT p
             FROM Product p
             JOIN p.tenant t
             WHERE p.id = ?1
-            AND t.id = ?2        
+            AND t.name = ?2        
            """
+
     )
-    Optional<Product> findByIdAndTenantId(Long productId, Long tenantId);
-
-
+    Optional<Product> findByIdAndTenantName(Long productId, String tenantName);
 
 
 }

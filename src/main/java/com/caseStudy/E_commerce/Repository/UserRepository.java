@@ -29,10 +29,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
             SELECT u
             FROM User u
             JOIN u.tenant t
-            WHERE t.id = ?1                                                 
+            WHERE t.name = ?1                                                 
             """
     )
-    Page<User> findByTenantId(long id , Pageable pageable);
+    Page<User> findByTenantName(String tenantName , Pageable pageable);
 
     @Query(
             """

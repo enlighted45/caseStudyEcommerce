@@ -78,14 +78,14 @@ public class UserService {
     // getAllUser for Tenant
     @Transactional(readOnly = true)
     public Page<UserResponseDTO> getUsersByTenant(
-            Long tenantId,
+            String tenantName,
             Pageable pageable
     ) {
-        tenantRepository.findById(tenantId).orElseThrow(
-                ()-> new ResourceNotFoundException("Tenant with Id : " + tenantId + "don't exist")
+        tenantRepository.findByName(tenantName).orElseThrow(
+                ()-> new ResourceNotFoundException("Tenant with Name : " + tenantName + "don't exist")
         );
         userPageValidator.validate(pageable);
-        return userRepository.findByTenantId(tenantId,pageable).
+        return userRepository.findByTenantName(tenantName,pageable).
                 map(user->userMapper.mapToResponseDTO(user));
     }
 

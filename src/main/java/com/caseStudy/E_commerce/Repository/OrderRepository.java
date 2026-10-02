@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
@@ -34,6 +36,15 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     )
     Page<Order> findOrderHistory(Long userId, Pageable pageable);
 
-
+    @Query(
+            """
+            SELECT o
+            FROM Order o
+            JOIN o.user u
+            WHERE u.id = ?1
+            AND o.id = ?2                                    
+            """
+    )
+    Optional<Order> findOrderByUserIdAndOrderId(Long userId, Long orderId);
 
 }

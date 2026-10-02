@@ -20,7 +20,7 @@ public class OrderItem {
     //id	Long	Primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
     //Order	The order this item belongs to
     @ManyToOne
     @JoinColumn(

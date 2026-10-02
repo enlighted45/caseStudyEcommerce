@@ -35,7 +35,7 @@ public class OrderService {
     private ProductRepository productRepository;
     private OrderMapper orderMapper;
     private OrderItemMapper orderItemMapper;
-    private OrderService(OrderRepository orderRepository,
+    public OrderService(OrderRepository orderRepository,
                          UserRepository userRepository ,
                          OrderMapper orderMapper , ProductRepository productRepository,
                          OrderItemMapper orderItemMapper){
@@ -49,12 +49,12 @@ public class OrderService {
 
 
     @Transactional
-    public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO){
+    public OrderResponseDTO createOrder(Long userId,OrderRequestDTO orderRequestDTO){
         // order request me mujhe userid or
         User user = userRepository.
-                findById(orderRequestDTO.getUserId()).
+                findById(userId).
                 orElseThrow(()-> new ResourceNotFoundException("The user with Id : " +
-                        orderRequestDTO.getUserId() + " not exist"));
+                        userId + " not exist"));
         Order order = orderMapper.mapToEntity(orderRequestDTO,user);
         int quantity = 0;
         BigDecimal price = BigDecimal.ZERO;
@@ -88,35 +88,35 @@ public class OrderService {
         orderRepository.save(order);
         return orderMapper.mapToResponseDTO(order);
     }
-    // get OrderById
-    @Transactional(readOnly = true)
-    public OrderResponseDTO getOrderById(Long orderID){
-        Order order = orderRepository.findById(orderID).
-                orElseThrow(()->new ResourceNotFoundException(
-                        "Order with ID : " + orderID + "Don't exist"
-                ));
-
-        return orderMapper.mapToResponseDTO(order);
-    }
-
     // get orderHistory
     @Transactional(readOnly = true)
     public Page<OrderResponseDTO> getOrderHistory(Long userId, Pageable pageable){
         // validate the user
-        User user = userRepository.findById(userId).orElseThrow(
+        userRepository.findById(userId).orElseThrow(
                 ()-> new ResourceNotFoundException("User with Id : " + userId + " don't exist"));
         //findAllOrderByUserId
         // have to make pagebale because user pagaeble wouldn't have
-        Pageable newPagebale = PageRequest.of(
+        Pageable newPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by("createdAt").descending()
         );
         // ishme mujhe
         return orderRepository.
-                findOrderHistory(userId,newPagebale).
+                findOrderHistory(userId,newPageable).
                 map(order -> orderMapper.mapToResponseDTO(order));
     }
+
+    @Transactional(readOnly = true)
+    public OrderResponseDTO getOrderById(Long userId, Long orderId){
+        Order order = orderRepository.
+                findOrderByUserIdAndOrderId(userId,orderId).orElseThrow(()->
+                        new ResourceNotFoundException(
+                                "Order with Id : " + orderId +
+                                        " don't exist Under User with Id :" + userId));
+        return orderMapper.mapToResponseDTO(order);
+    }
+
 
 
 

@@ -12,12 +12,13 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "orders")
 public class Order {
 
     //id	Long	Primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
     //totalQuantity	Integer	Total quantity of all products in the order
     @Column(
             nullable = false

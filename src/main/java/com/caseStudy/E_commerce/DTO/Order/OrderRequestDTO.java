@@ -21,8 +21,4 @@ public class OrderRequestDTO {
     @Valid
     private List<OrderItemRequestDTO> items;
 
-    @NotBlank
-    @Positive
-    private Long userId;
-
 }

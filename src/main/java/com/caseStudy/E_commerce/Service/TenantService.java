@@ -61,7 +61,7 @@ public class TenantService {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(
                 ()-> new ResourceNotFoundException("Tenant with Id : " + tenantId + "don't exist")
         );
-        boolean val = tenantRepository.existsByName(request.getName());
+        boolean val = tenantRepository.existsByNameAndNotById(request.getName(),tenantId);
         if (val) throw new DuplicateResourceException("Tenant with Name : "+request.getName() + " already exist");
         tenant.setUpdatedAt(LocalDateTime.now());
         tenant.setName(request.getName());

@@ -32,11 +32,12 @@ public class ProductService {
     }
 
    @Transactional
-    public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO,Long tenantId){
+    public ProductResponseDTO createProduct(
+            String tenantName,ProductRequestDTO productRequestDTO){
 
         // I need to get Tenant
-        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow( ()->
-                new ResourceNotFoundException("Tenant with tenantId : " + tenantId + " Don't exist")
+        Tenant tenant = tenantRepository.findByName(tenantName).orElseThrow( ()->
+                new ResourceNotFoundException("Tenant with Name : " + tenantName + " Don't exist")
         );
         // check whether it is duplicate or not
         Product product = productMapper.mapToEntity(productRequestDTO,tenant);
@@ -46,24 +47,24 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponseDTO getProductById(Long productId, Long tenantId){
+    public ProductResponseDTO getProductById(Long productId, String tenantName){
 
-        Product product = productRepository.findByIdAndTenantId(productId,tenantId).orElseThrow(
+        Product product = productRepository.findByIdAndTenantName(productId,tenantName).orElseThrow(
                 ()-> new ResourceNotFoundException(
                         "Product with id " + productId +
-                                " does not exist under tenant " + tenantId
+                                " does not exist under tenant " + tenantName
                 )
         );
         return productMapper.mapToResponseDTO(product);
     }
 
     @Transactional
-    public ProductResponseDTO updateProduct(Long productId, Long tenantId,
+    public ProductResponseDTO updateProduct(Long productId, String tenantName,
                                             ProductRequestDTO productRequestDTO){
-        Product product = productRepository.findByIdAndTenantId(productId,tenantId).orElseThrow(
+        Product product = productRepository.findByIdAndTenantName(productId,tenantName).orElseThrow(
                 ()-> new ResourceNotFoundException(
                         "Product with id " + productId +
-                                " does not exist under tenant " + tenantId
+                                " does not exist under tenant " + tenantName
                 )
         );
         // check whether it is duplicate or not
@@ -76,11 +77,11 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long productId, Long tenantId){
-        Product product = productRepository.findByIdAndTenantId(productId,tenantId).orElseThrow(
+    public void deleteProduct(Long productId, String tenantName){
+        Product product = productRepository.findByIdAndTenantName(productId,tenantName).orElseThrow(
                 ()-> new ResourceNotFoundException(
                         "Product with id " + productId +
-                                " does not exist under tenant " + tenantId
+                                " does not exist under tenant " + tenantName
                 )
         );
         Tenant tenant = product.getTenant();
@@ -92,38 +93,56 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> getProductsByTenant(Long tenantId, Pageable pageable) {
+    public Page<ProductResponseDTO> getProductsByTenant(String tenantName, Pageable pageable) {
 
-        tenantRepository.findById(tenantId).orElseThrow(()->new ResourceNotFoundException(
-                "Tenant with Id : " + tenantId + "don't exist"
+        tenantRepository.findByName(tenantName).orElseThrow(()->new ResourceNotFoundException(
+                "Tenant with Name : " + tenantName + "don't exist"
         ));
 
         pageableValidator.validate(pageable);
 
         return productRepository.
-                findByTenantId(tenantId,pageable).
+                findByTenantName(tenantName,pageable).
                 map(product -> productMapper.mapToResponseDTO(product));
     }
 
+
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> getProductsByCategory(Long tenantId, String category, Pageable pageable)
+    public Page<ProductResponseDTO> getProductsByCategory
+            ( String category, Pageable pageable)
     {
-        tenantRepository.findById(tenantId).orElseThrow(()->new ResourceNotFoundException(
-                "Tenant with Id : " + tenantId + "don't exist"
-        ));
         pageableValidator.validate(pageable);
         return productRepository.
-                findByTenantIdAndCategory(tenantId,category,pageable).
+                findByCategory(category,pageable).
                 map(product -> productMapper.mapToResponseDTO(product));
     }
+
+
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> searchProductsByName(Long tenantId, String name, Pageable pageable) {
-        tenantRepository.findById(tenantId).orElseThrow(()->new ResourceNotFoundException(
-                "Tenant with Id : " + tenantId + "don't exist"
-        ));
+    public Page<ProductResponseDTO> searchProductsByName( String name, Pageable pageable) {
         pageableValidator.validate(pageable);
         return productRepository.
-                findByTenantIdAndName(tenantId,name,pageable).
+                findByName(name,pageable).
                 map(product -> productMapper.mapToResponseDTO(product));
     }
+
+    @Transactional(readOnly = true)
+    public  Page<ProductResponseDTO> getProducts(Pageable pageable){
+        pageableValidator.validate(pageable);
+        return productRepository.
+                findAll(pageable).
+                map(product -> productMapper.mapToResponseDTO(product));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> searchProductsByCategoryAndName(
+             String category, String name,Pageable pageable) {
+        pageableValidator.validate(pageable);
+        return productRepository.
+                findByCategoryAndName(category, name,pageable).
+                map(product -> productMapper.mapToResponseDTO(product));
+    }
+
+
+
 }

@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
     //name        → search by product name
     @Column(
             length = 150,
