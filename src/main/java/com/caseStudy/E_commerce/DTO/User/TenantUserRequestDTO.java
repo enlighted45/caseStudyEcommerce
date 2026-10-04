@@ -1,18 +1,14 @@
 package com.caseStudy.E_commerce.DTO.User;
 
-import com.caseStudy.E_commerce.Enum.Role;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserRequestDTO {
+
+public class TenantUserRequestDTO {
     @NotBlank(message = "Username is required")
     private String username;
 
@@ -26,8 +22,9 @@ public class UserRequestDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
+    @NotNull(message = "TenantId can't be null")
+    @Positive(message = "It should be positive")
+    private Long tenantId;
     @NotBlank(message = "password can't be blank")
     private String password;
-
-
 }

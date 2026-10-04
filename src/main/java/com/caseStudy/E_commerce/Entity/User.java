@@ -94,5 +94,7 @@ public class User {
 
     LocalDateTime updatedAt;
 
+    String keycloakId;
+
 
 }

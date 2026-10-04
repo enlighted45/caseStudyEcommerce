@@ -43,5 +43,26 @@ public interface UserRepository extends JpaRepository<User,Long> {
     )
     boolean existsByEmailAndIdNot(long id,String email);
 
+    @Query(
+            """
+            SELECT u
+            FROM User u
+            JOIN u.tenant t
+            WHERE u.id=?1 AND t.id=?2                                                 
+            """
+    )
+
+    Optional<User> findByUserANDTenant(Long userID, Long TenantId);
+
+    @Query(
+            """
+            SELECT u
+            FROM User u
+            JOIN u.tenant t
+            WHERE u.id=?1 AND t.name=?2                                                 
+            """
+    )
+    Optional<User> findByUserANDTenantName(Long userID, String tenantName);
+
 
 }

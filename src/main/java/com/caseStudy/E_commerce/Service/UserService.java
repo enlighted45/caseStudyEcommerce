@@ -11,6 +11,7 @@ import com.caseStudy.E_commerce.Mapper.UserMapper;
 import com.caseStudy.E_commerce.PageValidation.UserPageValidator;
 import com.caseStudy.E_commerce.Repository.TenantRepository;
 import com.caseStudy.E_commerce.Repository.UserRepository;
+import com.caseStudy.E_commerce.Service.Keycloak.KeycloakUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,39 +26,44 @@ public class UserService {
     private UserMapper userMapper;
     private TenantRepository tenantRepository;
     private UserPageValidator userPageValidator;
+    private final KeycloakUserService keycloakUserService;
 
     public UserService(UserRepository userRepository, UserMapper userMapper,
-                       TenantRepository tenantRepository, UserPageValidator userPageValidator){
+                       TenantRepository tenantRepository, UserPageValidator userPageValidator, KeycloakUserService keycloakUserService){
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.tenantRepository = tenantRepository;
         this.userPageValidator = userPageValidator;
+        this.keycloakUserService = keycloakUserService;
     }
 
     // create user
     @Transactional
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
-        // checking email username
-        boolean var = userRepository.existsByEmail(userRequestDTO.getEmail());
-        if(var) throw new DuplicateResourceException("This Email : " + userRequestDTO.getEmail() + " already exist");
-        var = userRepository.existsByUserName(userRequestDTO.getUsername());
-        if(var) throw new DuplicateResourceException("This Username : " + userRequestDTO.getUsername() + " already exist");
-        Long tenantId = userRequestDTO.getTenantId();
-        if(tenantId==null){
-            User user = userMapper.mapToEntity(userRequestDTO,null);
+
+        String keycloakUserId = null;
+
+        try{
+            // checking email username
+            boolean var = userRepository.existsByEmail(userRequestDTO.getEmail());
+            if(var) throw new DuplicateResourceException("This Email : " + userRequestDTO.getEmail() + " already exist");
+            var = userRepository.existsByUserName(userRequestDTO.getUsername());
+            if(var) throw new DuplicateResourceException("This Username : " + userRequestDTO.getUsername() + " already exist");
+            // 1. Create user in Keycloak
+            keycloakUserId=keycloakUserService.createUser(userRequestDTO);
+            User user = userMapper.mapToEntity(userRequestDTO);
+            user.setKeycloakId(keycloakUserId);
+
             user = userRepository.save(user);
             return userMapper.mapToResponseDTO(user);
+        } catch (Exception e) {
+            if (keycloakUserId != null) {
+                keycloakUserService.deleteUser(keycloakUserId);
+            }
+            throw new RuntimeException(e);
         }
-        else{
-            Tenant tenant =  tenantRepository.findById(tenantId).orElseThrow(
-                    ()-> new ResourceNotFoundException("Tenant with Id : " + tenantId + "don't exist")
-            );
-            User user = userMapper.mapToEntity(userRequestDTO,tenant);
-            tenant.addUser(user);
-            // yahan pe tune cascade lag rakha will that automatically save the tenant
-            user = userRepository.save(user);
-            return userMapper.mapToResponseDTO(user);
-        }
+
+
     }
     // find by id
     @Transactional(readOnly = true)
@@ -75,19 +81,6 @@ public class UserService {
                 map(user->userMapper.mapToResponseDTO(user));
     }
 
-    // getAllUser for Tenant
-    @Transactional(readOnly = true)
-    public Page<UserResponseDTO> getUsersByTenant(
-            String tenantName,
-            Pageable pageable
-    ) {
-        tenantRepository.findByName(tenantName).orElseThrow(
-                ()-> new ResourceNotFoundException("Tenant with Name : " + tenantName + "don't exist")
-        );
-        userPageValidator.validate(pageable);
-        return userRepository.findByTenantName(tenantName,pageable).
-                map(user->userMapper.mapToResponseDTO(user));
-    }
 
     // update user should be allowed
     // here it didn't update username and tenantId and role will fix it when implementing the Authentication
@@ -97,15 +90,22 @@ public class UserService {
             UserUpdateRequestDTO request
     ) {
         User user = userRepository.findById(userId).orElseThrow(
-                ()-> new ResourceNotFoundException("User with Id : " + userId + "don't exist")
+                ()-> new ResourceNotFoundException("User with Id : "
+                        + userId + "don't exist")
         );
-        boolean emailAlreadyExists = userRepository.existsByEmailAndIdNot(userId,request.getEmail());
-        if(emailAlreadyExists) throw new DuplicateResourceException("This Email : " + request.getEmail() + " already exist");
+        boolean emailAlreadyExists = userRepository.existsByEmailAndIdNot
+                (userId,request.getEmail());
+        if(emailAlreadyExists) throw new DuplicateResourceException
+                ("This Email : " + request.getEmail() + " already exist");
+
+        keycloakUserService.updateUser(user.getKeycloakId(),request);
         user.setUpdatedAt(LocalDateTime.now());
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         return userMapper.mapToResponseDTO(user);
+
+
     }
 
     @Transactional
@@ -114,11 +114,12 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new ResourceNotFoundException("User with Id : " + userId + "don't exist")
         );
-        Tenant tenant = user.getTenant();
-        if (tenant != null) {
-            tenant.getUsers().remove(user);
-        }
+
+        keycloakUserService.deleteUser(user.getKeycloakId());
+
+
         userRepository.delete(user);
+
     }
 
 }

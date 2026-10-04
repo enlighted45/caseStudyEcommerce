@@ -7,9 +7,9 @@ import com.caseStudy.E_commerce.DTO.User.UserUpdateRequestDTO;
 import com.caseStudy.E_commerce.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +22,7 @@ public class UserManagementController {
         this.userService=userService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/auth/signup")
     public ResponseEntity<UserResponseDTO> createUser(
             @RequestBody @Valid UserRequestDTO userRequestDTO
     ){
@@ -32,6 +32,7 @@ public class UserManagementController {
     }
 
     @GetMapping("/users/{id}")
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
     public ResponseEntity<UserResponseDTO> getUserById(
             @PathVariable("id") Long id){
         UserResponseDTO userResponseDTO = userService.getUserById(id);
@@ -39,57 +40,23 @@ public class UserManagementController {
                 .status(HttpStatus.OK).body(userResponseDTO);
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<Page<UserResponseDTO>> getAllUser(Pageable pageable){
-        Page<UserResponseDTO> pageResponse = userService.getAllUsers(pageable);
-        return ResponseEntity
-                .status(HttpStatus.OK).body(pageResponse);
-
-    }
-
-    @GetMapping("/{tenantName}/users")
-    public ResponseEntity<Page<UserResponseDTO>> getUsersByTenant
-            ( @PathVariable("tenantName") String tenantName, Pageable pageable){
-        Page<UserResponseDTO> pageResponse = userService.
-                getUsersByTenant(tenantName,pageable);
-        return ResponseEntity
-                .status(HttpStatus.OK).body(pageResponse);
-    }
-
     // update user
     @PutMapping("/users/{id}")
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
     public ResponseEntity<UserResponseDTO> updateUserById
-            (@PathVariable("id") Long id , @RequestBody
-            @Valid UserUpdateRequestDTO userUpdateRequestDTO){
+    (@PathVariable("id") Long id , @RequestBody
+    @Valid UserUpdateRequestDTO userUpdateRequestDTO){
 
         UserResponseDTO userResponseDTO = userService.updateUser(id,userUpdateRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.OK).body(userResponseDTO);
     }
-
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable("id") Long id){
         userService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
