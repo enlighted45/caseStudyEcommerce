@@ -50,10 +50,10 @@ public class TenantUserService {
            if(var) throw new DuplicateResourceException("This Email : " + tenantUserRequestDTO.getEmail() + " already exist");
            var = userRepository.existsByUserName(tenantUserRequestDTO.getUsername());
            if(var) throw new DuplicateResourceException("This Username : " + tenantUserRequestDTO.getUsername() + " already exist");
-           Tenant tenant =  tenantRepository.findById(
-                   tenantUserRequestDTO.getTenantId()).orElseThrow(
-                   ()-> new ResourceNotFoundException("Tenant with Id : " +
-                           tenantUserRequestDTO.getTenantId() + "don't exist")
+           Tenant tenant =  tenantRepository.findByName(
+                   tenantUserRequestDTO.getTenantName()).orElseThrow(
+                   ()-> new ResourceNotFoundException("Tenant with Name : " +
+                           tenantUserRequestDTO.getTenantName() + "don't exist")
            );
 
            User user = tenantUserMapper.mapToEntity(tenantUserRequestDTO,tenant);

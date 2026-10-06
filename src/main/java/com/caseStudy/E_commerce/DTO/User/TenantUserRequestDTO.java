@@ -22,9 +22,8 @@ public class TenantUserRequestDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotNull(message = "TenantId can't be null")
-    @Positive(message = "It should be positive")
-    private Long tenantId;
+    @NotBlank(message = "Last name is required")
+    String  tenantName;
     @NotBlank(message = "password can't be blank")
     private String password;
 }

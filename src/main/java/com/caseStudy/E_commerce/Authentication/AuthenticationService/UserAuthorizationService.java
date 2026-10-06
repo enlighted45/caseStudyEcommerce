@@ -19,6 +19,9 @@ public class UserAuthorizationService {
         User currentUser =
                 authenticatedUserService.getCurrentUser();
 
+        System.out.println(currentUser.getId());
+        System.out.println(userId);
+
         return currentUser.getId().equals(userId);
     }
 }

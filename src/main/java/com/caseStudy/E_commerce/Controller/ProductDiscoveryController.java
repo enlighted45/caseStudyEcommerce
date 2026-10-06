@@ -2,6 +2,8 @@ package com.caseStudy.E_commerce.Controller;
 
 import com.caseStudy.E_commerce.DTO.Product.ProductResponseDTO;
 import com.caseStudy.E_commerce.Service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/products")
+@SecurityRequirement(name = "bearerAuth")
 public class ProductDiscoveryController {
 
     private ProductService productService;
@@ -19,7 +22,7 @@ public class ProductDiscoveryController {
     }
     // now what to do
     @GetMapping
-    public ResponseEntity<Page<ProductResponseDTO>> getProducts(Pageable pageable){
+    public ResponseEntity<Page<ProductResponseDTO>> getProducts(@ParameterObject Pageable pageable){
         Page<ProductResponseDTO> pageResponse =
                 productService.getProducts(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
@@ -28,7 +31,7 @@ public class ProductDiscoveryController {
 
     @GetMapping("/category/{category}")
     public ResponseEntity<Page<ProductResponseDTO>> getProductsByCategory(
-            @PathVariable("category") String category, Pageable pageable){
+            @PathVariable("category") String category, @ParameterObject Pageable pageable){
         Page<ProductResponseDTO> pageResponse = productService.
                 getProductsByCategory(category, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
@@ -38,7 +41,7 @@ public class ProductDiscoveryController {
     @GetMapping("/name/{name}")
     public ResponseEntity<Page<ProductResponseDTO>> searchProductsByName(
             @PathVariable("name") String name,
-            Pageable pageable){
+            @ParameterObject Pageable pageable){
         Page<ProductResponseDTO> pageResponse = productService.
                 searchProductsByName(name, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
@@ -48,7 +51,7 @@ public class ProductDiscoveryController {
     @GetMapping("/search")
     public ResponseEntity<Page<ProductResponseDTO>> searchProductsByCategoryAndName(
             @RequestParam String name, @RequestParam String category,
-            Pageable pageable){
+            @ParameterObject Pageable pageable){
         Page<ProductResponseDTO> pageResponse = productService.
                 searchProductsByCategoryAndName(category, name, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(pageResponse);

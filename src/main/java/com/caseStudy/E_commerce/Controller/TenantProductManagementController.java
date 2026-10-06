@@ -5,7 +5,9 @@ import com.caseStudy.E_commerce.Authentication.AuthenticationService.TenantAutho
 import com.caseStudy.E_commerce.DTO.Product.ProductRequestDTO;
 import com.caseStudy.E_commerce.DTO.Product.ProductResponseDTO;
 import com.caseStudy.E_commerce.Service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize(
         "@tenantAuthorizationService.isCurrentUserTenant(#tenantName)"
 )
+@SecurityRequirement(name = "bearerAuth")
 
 public class TenantProductManagementController {
 
@@ -57,7 +60,7 @@ public class TenantProductManagementController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponseDTO>> getProductsByTenant
-            (@PathVariable("tenantName") String tenantName, Pageable pageable){
+            (@PathVariable("tenantName") String tenantName,@ParameterObject Pageable pageable){
 
         Page<ProductResponseDTO> pageResponse = productService.
                 getProductsByTenant(tenantName,pageable);

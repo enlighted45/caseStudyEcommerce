@@ -2,12 +2,15 @@ package com.caseStudy.E_commerce.Entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,7 +25,6 @@ public class Product {
     @Column(
             length = 150,
             nullable = false
-
     )
     String name;
     //price       → order total amount
@@ -49,10 +51,31 @@ public class Product {
     )
     String description;
     //tenant      → product belongs to a brand
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "TenantId",
             nullable = false
     )
     Tenant tenant;
+
+    @NotNull
+    Boolean isDeleted;
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Favourite> favourites = new ArrayList<>();
+
+    public void addFavourite(Favourite favourite) {
+        favourites.add(favourite);
+        favourite.setProduct(this);
+    }
+
+    public void removeFavourite(Favourite favourite) {
+        favourites.remove(favourite);
+        favourite.setProduct(null);
+    }
+
 }

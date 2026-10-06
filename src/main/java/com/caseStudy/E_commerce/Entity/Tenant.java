@@ -27,10 +27,11 @@ public class Tenant {
             nullable = false
     )
     String name;
+
     @OneToMany(
             mappedBy = "tenant",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            orphanRemoval = true
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+
     )
     List<User> users = new ArrayList<>();
 

@@ -32,12 +32,14 @@ public class Order {
     )
     BigDecimal totalAmount;
     //user	User	User who placed the order
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "UserId",
             nullable = false
     )
     User user;
+
+
     //orderItems	List<OrderItem>	Products included in the order
     @OneToMany(
             mappedBy = "order",

@@ -18,6 +18,7 @@ public class ProductMapper {
         productEntity.setPrice(productRequestDTO.getPrice());
         productEntity.setQuantity(productRequestDTO.getQuantity());
         productEntity.setTenant(tenant);
+        productEntity.setIsDeleted(false);
         return productEntity;
 
     }

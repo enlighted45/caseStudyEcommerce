@@ -4,7 +4,9 @@ package com.caseStudy.E_commerce.Controller;
 import com.caseStudy.E_commerce.DTO.tenant.TenantRequestDTO;
 import com.caseStudy.E_commerce.DTO.tenant.TenantResponseDTO;
 import com.caseStudy.E_commerce.Service.TenantService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/tenants")
 @PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "bearerAuth")
 public class TenantController {
 
     private TenantService tenantService;
@@ -46,7 +49,7 @@ public class TenantController {
 
     @GetMapping
     public ResponseEntity<Page<TenantResponseDTO>> getAllTenant(
-             Pageable page){
+            @ParameterObject Pageable page){
         Page<TenantResponseDTO> pageResponse = tenantService.getAllTenants(page);
         return ResponseEntity.
                 status(HttpStatus.OK).body(pageResponse);

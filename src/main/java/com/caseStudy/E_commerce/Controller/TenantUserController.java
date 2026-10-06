@@ -5,7 +5,9 @@ import com.caseStudy.E_commerce.DTO.User.TenantUserResponseDTO;
 import com.caseStudy.E_commerce.DTO.User.UserResponseDTO;
 import com.caseStudy.E_commerce.DTO.User.UserUpdateRequestDTO;
 import com.caseStudy.E_commerce.Service.TenantUserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/tenantUser")
 @PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "bearerAuth")
 public class TenantUserController {
     private final TenantUserService tenantUserService;
 
@@ -40,7 +43,7 @@ public class TenantUserController {
     @GetMapping("/{tenantName}")
 
     public ResponseEntity<Page<TenantUserResponseDTO>> getAllUserByTenantName
-            (@PathVariable("tenantName") String tenantName, Pageable pageable){
+            (@PathVariable("tenantName") String tenantName,@ParameterObject Pageable pageable){
 
         Page<TenantUserResponseDTO> pageResponse = tenantUserService.
                 getUsersByTenant(tenantName,pageable);
@@ -90,8 +93,7 @@ public class TenantUserController {
             @PathVariable Long userId
            ) {
 
-        tenantUserService.deleteUser(
-                userId,
+        tenantUserService.deleteUser(userId,
                 tenantName
         );
 

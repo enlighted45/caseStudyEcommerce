@@ -82,9 +82,9 @@ public class OrderService {
             OrderItem orderItem = orderItemMapper.mapToEntity(ele,product,order);
             order.getOrderItems().add(orderItem);
         }
-
         order.setTotalQuantity(quantity);
         order.setTotalAmount(price);
+        user.addOrder(order);
         orderRepository.save(order);
         return orderMapper.mapToResponseDTO(order);
     }

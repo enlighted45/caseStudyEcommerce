@@ -4,6 +4,7 @@ import com.caseStudy.E_commerce.DTO.User.UserRequestDTO;
 import com.caseStudy.E_commerce.Entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,6 +25,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByEmail(String email);
     boolean existsByUserName(String username);
 
+    @EntityGraph(attributePaths = "tenant")
     @Query(
             """
             SELECT u
@@ -43,6 +45,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     )
     boolean existsByEmailAndIdNot(long id,String email);
 
+    @EntityGraph(attributePaths = "tenant")
     @Query(
             """
             SELECT u
@@ -54,6 +57,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByUserANDTenant(Long userID, Long TenantId);
 
+    @EntityGraph(attributePaths = "tenant")
     @Query(
             """
             SELECT u

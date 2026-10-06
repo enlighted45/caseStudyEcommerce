@@ -42,14 +42,6 @@ public class User {
     )
     String email;
 
-    /*@Column(
-            nullable = false,
-            name = "Password",
-            length = 150,
-            insertable = true,
-            updatable = true
-    )
-    String password;*/
 
     @Column(
             nullable = false,
@@ -74,21 +66,38 @@ public class User {
     @Column(
             nullable = false,
             name = "Role",
-            length = 10,
-            insertable = true,
-            updatable = true
+            length = 10
+
     )
     Role role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "TenantId",
             nullable = true
     )
     Tenant tenant;
 
-    @OneToMany(mappedBy = "user")
-    List<Order> orderList = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    List<Order> orders = new ArrayList<>();
+
+
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Favourite> favourites = new ArrayList<>();
+
+
 
     LocalDateTime createdAt;
 
@@ -97,4 +106,19 @@ public class User {
     String keycloakId;
 
 
+    public void addOrder(Order order) {
+        this.orders.add(order);
+        order.setUser(this);
+    }
+
+    public void addFavourite(Favourite favourite) {
+        favourites.add(favourite);
+        favourite.setUser(this);
+    }
+
+
+    public void removeFavourite(Favourite favourite) {
+        favourites.remove(favourite);
+        favourite.setUser(null);
+    }
 }

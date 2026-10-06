@@ -22,7 +22,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     //Order	The order this item belongs to
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "OrderId",
         nullable = false
@@ -30,7 +30,7 @@ public class OrderItem {
     Order order;
     //product	Product	Product being purchased
     // what relation should it follow
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "ProductId",
             nullable = false

@@ -5,6 +5,7 @@ import com.caseStudy.E_commerce.DTO.User.UserRequestDTO;
 import com.caseStudy.E_commerce.DTO.User.UserResponseDTO;
 import com.caseStudy.E_commerce.DTO.User.UserUpdateRequestDTO;
 import com.caseStudy.E_commerce.Service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping()
+@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
+
 public class UserManagementController {
 
 
@@ -32,7 +36,7 @@ public class UserManagementController {
     }
 
     @GetMapping("/users/{id}")
-    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#id)")
     public ResponseEntity<UserResponseDTO> getUserById(
             @PathVariable("id") Long id){
         UserResponseDTO userResponseDTO = userService.getUserById(id);
@@ -42,7 +46,7 @@ public class UserManagementController {
 
     // update user
     @PutMapping("/users/{id}")
-    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#id)")
     public ResponseEntity<UserResponseDTO> updateUserById
     (@PathVariable("id") Long id , @RequestBody
     @Valid UserUpdateRequestDTO userUpdateRequestDTO){
@@ -51,7 +55,7 @@ public class UserManagementController {
         return ResponseEntity
                 .status(HttpStatus.OK).body(userResponseDTO);
     }
-    @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
+    @PreAuthorize("@userAuthorizationService.isCurrentUser(#id)")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable("id") Long id){

@@ -31,6 +31,8 @@ public class ProductService {
         this.pageableValidator=pageableValidator;
     }
 
+    // Product Management
+
    @Transactional
     public ProductResponseDTO createProduct(
             String tenantName,ProductRequestDTO productRequestDTO){
@@ -89,7 +91,8 @@ public class ProductService {
         if (tenant != null) {
             tenant.getProducts().remove(product);
         }
-        productRepository.delete(product);
+        product.setIsDeleted(true);
+
     }
 
     @Transactional(readOnly = true)
@@ -106,6 +109,8 @@ public class ProductService {
                 map(product -> productMapper.mapToResponseDTO(product));
     }
 
+
+    // product Discovery
 
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> getProductsByCategory
@@ -130,7 +135,7 @@ public class ProductService {
     public  Page<ProductResponseDTO> getProducts(Pageable pageable){
         pageableValidator.validate(pageable);
         return productRepository.
-                findAll(pageable).
+                findAllActiveProducts(pageable).
                 map(product -> productMapper.mapToResponseDTO(product));
     }
 

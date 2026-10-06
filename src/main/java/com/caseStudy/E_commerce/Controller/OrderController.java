@@ -4,7 +4,9 @@ package com.caseStudy.E_commerce.Controller;
 import com.caseStudy.E_commerce.DTO.Order.OrderRequestDTO;
 import com.caseStudy.E_commerce.DTO.Order.OrderResponseDTO;
 import com.caseStudy.E_commerce.Service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users/{userId}/orders")
 @PreAuthorize("@userAuthorizationService.isCurrentUser(#userId)")
+@SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
 
@@ -36,7 +39,7 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<Page<OrderResponseDTO>> getOrderHistory
-            (@PathVariable("userId") Long userId, Pageable pageable){
+            (@PathVariable("userId") Long userId, @ParameterObject Pageable pageable){
 
         Page<OrderResponseDTO> pageResponse = orderService.
                 getOrderHistory(userId,pageable);
