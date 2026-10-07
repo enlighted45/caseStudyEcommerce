@@ -71,6 +71,16 @@ public class TenantUserService {
            throw e;
        }
     }
+
+    public TenantUserResponseMeDTO getTenantUserByKeycloak(String userId){
+        User user = userRepository.findByKeycloakId(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("User with Id : " + userId + "don't exist") );
+        TenantUserResponseMeDTO tenantUserResponseMeDTO = new TenantUserResponseMeDTO();
+        tenantUserResponseMeDTO.setId(user.getId());
+        tenantUserResponseMeDTO.setTenantName(user.getTenant().getName());
+        return tenantUserResponseMeDTO;
+    }
+
     // find by id and tenantName
     @Transactional(readOnly = true)
     public TenantUserResponseDTO getUserById(Long id,String tenantName){

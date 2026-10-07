@@ -39,6 +39,8 @@ public class SecurityConfig {
                                 .requestMatchers("/tenants/**")
                                 .hasRole("ADMIN")
 
+                                .requestMatchers("/tenantUser/me")
+                                .hasRole("TENANT")
 
                                 // 2. Admin manages tenant users
                                 .requestMatchers("/tenantUser/**")

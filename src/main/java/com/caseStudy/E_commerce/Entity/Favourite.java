@@ -2,7 +2,6 @@ package com.caseStudy.E_commerce.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Entity
 @Table(

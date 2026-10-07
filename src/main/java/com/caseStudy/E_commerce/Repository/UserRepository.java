@@ -25,6 +25,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByEmail(String email);
     boolean existsByUserName(String username);
 
+
+    Optional<User> findByKeycloakId(String userName);
+
     @EntityGraph(attributePaths = "tenant")
     @Query(
             """
@@ -67,6 +70,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
             """
     )
     Optional<User> findByUserANDTenantName(Long userID, String tenantName);
+
+
 
 
 }

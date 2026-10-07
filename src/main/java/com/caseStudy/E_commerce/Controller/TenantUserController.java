@@ -1,9 +1,6 @@
 package com.caseStudy.E_commerce.Controller;
 
-import com.caseStudy.E_commerce.DTO.User.TenantUserRequestDTO;
-import com.caseStudy.E_commerce.DTO.User.TenantUserResponseDTO;
-import com.caseStudy.E_commerce.DTO.User.UserResponseDTO;
-import com.caseStudy.E_commerce.DTO.User.UserUpdateRequestDTO;
+import com.caseStudy.E_commerce.DTO.User.*;
 import com.caseStudy.E_commerce.Service.TenantUserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -13,11 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tenantUser")
-@PreAuthorize("hasRole('ADMIN')")
 @SecurityRequirement(name = "bearerAuth")
 public class TenantUserController {
     private final TenantUserService tenantUserService;
@@ -39,6 +37,16 @@ public class TenantUserController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<TenantUserResponseMeDTO> getUserMe(@AuthenticationPrincipal Jwt jwt){
+        String keycloakUserId = jwt.getSubject();
+        TenantUserResponseMeDTO tenantUserResponseMeDTO =
+                tenantUserService.getTenantUserByKeycloak(keycloakUserId);
+        return ResponseEntity
+                .status(HttpStatus.OK).body(tenantUserResponseMeDTO);
+    }
+
 
     @GetMapping("/{tenantName}")
 

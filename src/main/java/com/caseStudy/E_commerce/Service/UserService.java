@@ -108,6 +108,12 @@ public class UserService {
 
     }
 
+    public Long getUserByKeycloakUserID(String userId){
+        User user = userRepository.findByKeycloakId(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("User with Id : " + userId + "don't exist") );
+        return user.getId();
+    }
+
     @Transactional
     public void deleteUser(Long userId) {
         // q-1 should I also remove user from tenant usersList if it is a part of list
